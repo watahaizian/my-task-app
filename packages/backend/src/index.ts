@@ -7,6 +7,7 @@ type Bindings = {
   CLERK_SECRET_KEY: string
   // ★ Publishable Keyも型定義に入れておくと、より安全
   CLERK_PUBLISHABLE_KEY: string
+  ASSETS: Fetcher
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
