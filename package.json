@@ -1,0 +1,12 @@
+{
+    "name": "my-task-app",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+        "deploy": "pnpm --filter frontend build && pnpm --filter backend deploy"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "concurrently": "^9.1.2"
+    }
+}

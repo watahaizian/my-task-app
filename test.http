@@ -1,0 +1,56 @@
+### 全てのボードを取得する
+GET http://localhost:8787/api/boards
+
+###
+### 新しいボードを作成する
+POST http://localhost:8787/api/boards
+Content-Type: application/json
+
+{
+  "name": "就活準備ボード"
+}
+
+###
+### もう一つ作ってみる
+POST http://localhost:8787/api/boards
+Content-Type: application/json
+
+{
+  "name": "趣味のプロジェクト"
+}
+
+### 特定のボードに紐づくリストを取得する
+GET http://localhost:8787/api/lists?boardId=b3678823-55f0-46ef-8ce6-2d2016da0f63
+
+###
+### 新しいリストを作成する
+POST http://localhost:8787/api/lists
+Content-Type: application/json
+
+{
+  "name": "未着手",
+  "boardId": "b3678823-55f0-46ef-8ce6-2d2016da0f63"
+}
+
+###
+### もう一つリストを作成する
+POST http://localhost:8787/api/lists
+Content-Type: application/json
+
+{
+  "name": "作業中",
+  "boardId": "b3678823-55f0-46ef-8ce6-2d2016da0f63"
+}
+
+### 特定のリストに紐づくカードを取得する
+GET http://localhost:8787/api/cards?listId=4d7cd441-92bd-4c6f-b265-f8e28d440d7a
+
+###
+### 新しいカードを作成する
+POST http://localhost:8787/api/cards
+Content-Type: application/json
+
+{
+  "content": "ポートフォリオサイトのREADMEを書く",
+  "listId": "4d7cd441-92bd-4c6f-b265-f8e28d440d7a"
+}
