@@ -235,4 +235,10 @@ app.patch('/api/cards/:id/move', async c => {
   }
 })
 
+app.all('*', (c) =>
+  c.env.ASSETS
+    ? c.env.ASSETS.fetch(c.req.raw)
+    : new Response('Not found', { status: 404 })
+);
+
 export default app

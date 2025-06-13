@@ -6,9 +6,9 @@
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
+  "vars": {
+    "CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsudGFzay53YXRhaGFpemlhbi5jb20k"
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
@@ -21,6 +21,10 @@
   //     "bucket_name": "my-bucket"
   //   }
   // ],
+  "assets": {
+        "directory": "../frontend/dist",
+        "binding": "ASSETS"
+    },
   "d1_databases": [
     {
       "binding": "DB",
