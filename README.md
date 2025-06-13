@@ -1,11 +1,9 @@
 # フルスタック・タスク管理アプリケーション (Trello風かんばんボード)
 A full-stack task management application, inspired by Trello, built with a modern serverless stack on Cloudflare.
 
-**✨ Live Demo: [https://my-task-app.あなたのサブドメイン.workers.dev/](https://my-task-app.あなたのサブドメイン.workers.dev/)**
+**✨ Live Demo: [https://task.watahaizian.com](https://task.watahaizian.com)**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
-![Trello Clone Screenshot](**ここにアプリのスクリーンショット画像を貼る**)
 
 ## 概要 (Overview)
 
@@ -41,7 +39,7 @@ A full-stack task management application, inspired by Trello, built with a moder
 ### インストールと実行
 1.  **リポジトリをクローン**
     ```bash
-    git clone [https://github.com/あなたのユーザー名/my-task-app.git](https://github.com/あなたのユーザー名/my-task-app.git)
+    git clone https://github.com/watahaizian/my-task-app.git
     cd my-task-app
     ```
 
