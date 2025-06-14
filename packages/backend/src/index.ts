@@ -5,7 +5,6 @@ import { Hono } from 'hono'
 type Bindings = {
   DB: D1Database
   CLERK_SECRET_KEY: string
-  // ★ Publishable Keyも型定義に入れておくと、より安全
   CLERK_PUBLISHABLE_KEY: string
   ASSETS: Fetcher
 }
@@ -17,37 +16,24 @@ app.use('/api/*', clerkMiddleware())
 
 // ユーザー登録ミドルウェア
 app.use('/api/*', async (c, next) => {
-  console.log("① ユーザー登録ミドルウェアが実行されました");
-
   const auth = getAuth(c)
   if (!auth?.userId) {
-    console.log("② Clerk認証情報が見つかりません");
     return c.json({ err: 'Unauthorized' }, 401)
   }
-  console.log(`③ ユーザーID [${auth.userId}] を取得しました`);
 
   try {
     const clerkClient = createClerkClient({ secretKey: c.env.CLERK_SECRET_KEY })
-
-    // DBからユーザーをチェック
-    console.log("④ データベースにユーザーが存在するか確認します");
     const dbUser = await c.env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(auth.userId).first()
 
     if (!dbUser) {
-      console.log("⑤ ユーザーがDBに存在しないため、新規登録します");
-
-      // Clerk API経由でユーザー情報を取得
-      console.log("⑥ Clerk APIから完全なユーザー情報を取得します");
       const user = await clerkClient.users.getUser(auth.userId)
       const primaryEmail = user.emailAddresses.find(e => e.id === user.primaryEmailAddressId)?.emailAddress
-      console.log(`⑦ ユーザーのEmail: ${primaryEmail}`);
 
       await c.env.DB.prepare('INSERT INTO users (id, email, name) VALUES (?, ?, ?)')
         .bind(auth.userId, primaryEmail ?? '', user.firstName ?? '')
         .run()
-      console.log("⑧ データベースに新しいユーザーを登録しました");
     } else {
-      console.log("⑨ ユーザーは既にデータベースに存在します");
+      console.log(`ユーザー ${auth.userId} は既に存在します。`)
     }
 
   } catch (e) {
@@ -61,7 +47,6 @@ app.use('/api/*', async (c, next) => {
 
 // ===== ボードAPI =====
 app.get('/api/boards', async c => {
-  console.log("⑩ ボード取得APIが実行されました");
   const auth = getAuth(c)
   if (!auth?.userId) return c.json({ err: 'Unauthorized' }, 401)
   try {
@@ -69,7 +54,6 @@ app.get('/api/boards', async c => {
       .prepare('SELECT * FROM boards WHERE user_id = ?')
       .bind(auth.userId)
       .all()
-    console.log(`⑪ ボードを ${results?.length ?? 0} 件取得しました`);
     return c.json(results)
   } catch (e) {
     console.error(e)
@@ -210,7 +194,6 @@ app.patch('/api/cards/:id/move', async c => {
     if (!newListId || newPosition === undefined) {
       return c.json({ err: 'newListId and newPosition are required' }, 400)
     }
-    // 元カードの所有権チェック
     const card = await c.env.DB
       .prepare(
         'SELECT c.id FROM cards c JOIN lists l ON c.list_id = l.id JOIN boards b ON l.board_id = b.id WHERE c.id = ? AND b.user_id = ?'
@@ -218,13 +201,11 @@ app.patch('/api/cards/:id/move', async c => {
       .bind(cardId, auth.userId)
       .first()
     if (!card) return c.json({ err: 'Card not found or access denied' }, 404)
-    // 移動先リストの所有権チェック
     const list = await c.env.DB
       .prepare('SELECT l.id FROM lists l JOIN boards b ON l.board_id = b.id WHERE l.id = ? AND b.user_id = ?')
       .bind(newListId, auth.userId)
       .first()
     if (!list) return c.json({ err: 'Destination list not found or access denied' }, 404)
-    // 更新
     await c.env.DB
       .prepare('UPDATE cards SET list_id = ?, position = ? WHERE id = ?')
       .bind(newListId, newPosition, cardId)
@@ -236,6 +217,7 @@ app.patch('/api/cards/:id/move', async c => {
   }
 })
 
+// 静的ファイルの提供
 app.all('*', (c) =>
   c.env.ASSETS
     ? c.env.ASSETS.fetch(c.req.raw)

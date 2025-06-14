@@ -4,12 +4,11 @@ import type { Board, Card, List } from '../types';
 import { BoardComponent } from './Board';
 import { Sidebar } from './Sidebar';
 
-export function BoardLoader() {
+export const BoardLoader = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [boards, setBoards] = useState<Board[]>([]);
   const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
 
-  // ★ 選択されたボードの詳細データ（リストやカードも含む）を管理するstate
   const [activeBoardData, setActiveBoardData] = useState<{
     board: Board;
     lists: List[];
@@ -18,10 +17,9 @@ export function BoardLoader() {
 
   const { getToken, isSignedIn } = useAuth();
 
-  // ★ このuseEffectは「サイドバー用のボード一覧」を取得するためだけ
   useEffect(() => {
     if (!isSignedIn) {
-      setBoards([]); // サインアウトしたらクリア
+      setBoards([]);
       return;
     }
     const fetchBoardList = async () => {
@@ -41,9 +39,7 @@ export function BoardLoader() {
   }, [isSignedIn, getToken, selectedBoardId]);
 
 
-  // ★★★ この新しいuseEffectが「選択されたボードの詳細」を取得する！ ★★★
   useEffect(() => {
-    // 選択されたボードがなければ何もしない
     if (!selectedBoardId || !isSignedIn) {
       setIsLoading(false);
       return;
@@ -59,12 +55,10 @@ export function BoardLoader() {
       if (!selectedBoard) { setIsLoading(false); return; }
 
       try {
-        // 1. リストを取得
         const listsRes = await fetch(`/api/lists?boardId=${selectedBoardId}`, { headers });
         const lists: List[] = await listsRes.json();
         lists.sort((a, b) => a.position - b.position);
 
-        // 2. カードをまとめて取得
         const cardsByList: Record<string, Card[]> = {};
         if (lists.length > 0) {
           const cardPromises = lists.map(list =>
@@ -76,7 +70,6 @@ export function BoardLoader() {
           });
         }
 
-        // 3. 全てのデータをまとめてセット
         setActiveBoardData({ board: selectedBoard, lists, cards: cardsByList });
 
       } catch (error) {
@@ -87,7 +80,7 @@ export function BoardLoader() {
     };
 
     fetchBoardDetails();
-  }, [selectedBoardId, isSignedIn, getToken, boards]); // ★ selectedBoardIdが変わるたびに再取得！
+  }, [selectedBoardId, isSignedIn, getToken, boards]);
 
 
   const handleBoardCreated = (newBoard: Board) => {
@@ -95,7 +88,6 @@ export function BoardLoader() {
     setSelectedBoardId(newBoard.id);
   };
 
-  // ローディング中は、選択されたボードがない場合と同じ表示
   const showLoadingOrEmpty = isLoading || !selectedBoardId;
 
   return (

@@ -18,7 +18,7 @@ export const BoardComponent = ({
   const [board, setBoard] = useState(initialBoard);
   const [lists, setLists] = useState(initialLists);
   const [cardsByList, setCardsByList] = useState(initialCards);
-  const [activeCard, setActiveCard] = useState<Card | null>(null); // ドラッグ中のカード
+  const [activeCard, setActiveCard] = useState<Card | null>(null);
   const { getToken } = useAuth();
 
   useEffect(() => {
@@ -54,7 +54,6 @@ export const BoardComponent = ({
     const overListId = over.id as string;
 
     if (activeCardData.list_id !== overListId) {
-      // 楽観的更新
       setCardsByList(prev => {
         const newCardsState = { ...prev };
         const sourceList = newCardsState[activeCardData.list_id]?.filter(c => c.id !== activeCardData.id) ?? [];
